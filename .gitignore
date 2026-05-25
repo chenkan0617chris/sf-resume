@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Local secrets — .env (placeholder) is committed; .env.local is not
+.env.local
+.env*.local
+
+# Prisma generated client
+/src/generated/
