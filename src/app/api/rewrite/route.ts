@@ -1,11 +1,12 @@
 // POST /api/rewrite — streaming resume rewrite. Returns text/event-stream.
+// Auth is enforced by middleware (proxy.ts) — no auth() call needed here,
+// which keeps this bundle under the 1 MB edge limit.
 //
 // SSE wire format (matches what the client useLLM hook expects):
 //   data: {"type":"chunk","content":"<cumulative full text so far>"}
 //   data: {"type":"done"}
 //   data: {"type":"error","message":"..."}
 
-import { auth } from '@/lib/auth';
 import {
   getProvider,
   getProviderKey,
@@ -13,8 +14,7 @@ import {
 } from '@/lib/providers';
 import type { OutputLang } from '@/lib/providers/shared';
 
-export const runtime = 'nodejs';
-export const maxDuration = 60;
+export const runtime = 'edge';
 
 interface RewriteBody {
   resumeMarkdown: string;
@@ -29,11 +29,6 @@ function sseEvent(obj: object): string {
 }
 
 export async function POST(req: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return new Response('Unauthorized', { status: 401 });
-  }
-
   let body: RewriteBody;
   try {
     body = await req.json();
