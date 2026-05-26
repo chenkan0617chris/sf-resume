@@ -5,6 +5,23 @@ import { useRouter } from 'next/navigation';
 
 type Mode = 'upload' | 'paste';
 
+const inputStyle: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.09)',
+  borderRadius: 10,
+  color: '#d4d4d8',
+  width: '100%',
+  padding: '8px 12px',
+  fontSize: 14,
+  outline: 'none',
+};
+
+const labelStyle: React.CSSProperties = {
+  color: '#71717a',
+  fontSize: 13,
+  fontWeight: 500,
+};
+
 export default function NewResumeForm({ onCancel }: { onCancel: () => void }) {
   const router = useRouter();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -88,26 +105,49 @@ export default function NewResumeForm({ onCancel }: { onCancel: () => void }) {
   }
 
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
-      <h3 className="mb-4 text-base font-semibold text-zinc-900">New Resume</h3>
+    <div>
+      <h3
+        className="mb-5 font-semibold"
+        style={{ color: '#f4f4f5', fontSize: 16 }}
+      >
+        New Resume
+      </h3>
 
       {/* Mode toggle */}
-      <div className="mb-4 flex items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-1 w-fit">
+      <div
+        className="mb-5 flex items-center gap-1 w-fit rounded-xl p-1"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.08)',
+        }}
+      >
         <button
           type="button"
           onClick={() => setMode('upload')}
-          className={mode === 'upload'
-            ? 'rounded-md bg-white px-3 py-1 text-sm font-medium text-zinc-900 shadow-sm'
-            : 'px-3 py-1 text-sm text-zinc-500 hover:text-zinc-700'}
+          className="rounded-lg px-3 py-1 text-sm font-medium transition-all"
+          style={
+            mode === 'upload'
+              ? {
+                  background: 'rgba(124,58,237,0.2)',
+                  color: '#c084fc',
+                }
+              : { color: '#71717a' }
+          }
         >
           Upload file
         </button>
         <button
           type="button"
           onClick={() => setMode('paste')}
-          className={mode === 'paste'
-            ? 'rounded-md bg-white px-3 py-1 text-sm font-medium text-zinc-900 shadow-sm'
-            : 'px-3 py-1 text-sm text-zinc-500 hover:text-zinc-700'}
+          className="rounded-lg px-3 py-1 text-sm font-medium transition-all"
+          style={
+            mode === 'paste'
+              ? {
+                  background: 'rgba(124,58,237,0.2)',
+                  color: '#c084fc',
+                }
+              : { color: '#71717a' }
+          }
         >
           Paste text
         </button>
@@ -116,7 +156,7 @@ export default function NewResumeForm({ onCancel }: { onCancel: () => void }) {
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         {/* Label */}
         <div className="flex flex-col gap-1">
-          <label htmlFor="resume-label" className="text-sm font-medium text-zinc-700">
+          <label htmlFor="resume-label" style={labelStyle}>
             Label
           </label>
           <input
@@ -125,26 +165,63 @@ export default function NewResumeForm({ onCancel }: { onCancel: () => void }) {
             placeholder="e.g. Main Resume, Software Engineer 2026"
             value={label}
             onChange={(e) => setLabel(e.target.value)}
-            className="rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+            style={{
+              ...inputStyle,
+              // placeholder color handled via global or inline workaround is not possible; keep default
+            }}
             disabled={isSubmitting}
           />
         </div>
 
         {mode === 'upload' ? (
           <div className="flex flex-col gap-2">
-            <p className="text-sm font-medium text-zinc-700">File <span className="text-zinc-400 font-normal">(PDF or DOCX)</span></p>
+            <p style={labelStyle}>
+              File{' '}
+              <span style={{ color: '#52525b', fontWeight: 400 }}>
+                (PDF or DOCX)
+              </span>
+            </p>
             <div
-              className="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-200 bg-zinc-50 px-6 py-8 text-center transition-colors hover:border-zinc-400 hover:bg-white"
+              className="flex cursor-pointer flex-col items-center justify-center rounded-xl px-6 py-8 text-center transition-all duration-200"
+              style={{
+                border: '2px dashed rgba(255,255,255,0.1)',
+                background: 'rgba(255,255,255,0.02)',
+              }}
               onClick={() => fileRef.current?.click()}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.border =
+                  '2px dashed rgba(124,58,237,0.4)';
+                (e.currentTarget as HTMLDivElement).style.background =
+                  'rgba(124,58,237,0.04)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.border =
+                  '2px dashed rgba(255,255,255,0.1)';
+                (e.currentTarget as HTMLDivElement).style.background =
+                  'rgba(255,255,255,0.02)';
+              }}
             >
-              <svg className="mb-2 h-8 w-8 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+              <svg
+                className="mb-2 h-8 w-8"
+                style={{ color: '#52525b' }}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                />
               </svg>
-              <p className="text-sm text-zinc-600">
-                {isParsing ? 'Parsing…' : 'Click to upload PDF or DOCX'}
+              <p className="text-sm" style={{ color: '#a1a1aa' }}>
+                {isParsing ? 'Parsing...' : 'Click to upload PDF or DOCX'}
               </p>
-              <p className="mt-1 text-xs text-zinc-400">
-                {markdown ? `✓ Parsed (${markdown.length.toLocaleString()} chars)` : 'Your file is never stored — only the extracted text is saved'}
+              <p className="mt-1 text-xs" style={{ color: '#52525b' }}>
+                {markdown
+                  ? `Parsed (${markdown.length.toLocaleString()} chars)`
+                  : 'Your file is never stored — only the extracted text is saved'}
               </p>
               <input
                 ref={fileRef}
@@ -156,48 +233,79 @@ export default function NewResumeForm({ onCancel }: { onCancel: () => void }) {
               />
             </div>
             {markdown && (
-              <details className="rounded-lg border border-zinc-200 bg-zinc-50">
-                <summary className="cursor-pointer px-3 py-2 text-xs font-medium text-zinc-600 hover:text-zinc-900">
+              <details
+                className="rounded-xl"
+                style={{
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
+              >
+                <summary
+                  className="cursor-pointer px-3 py-2 text-xs font-medium"
+                  style={{ color: '#71717a' }}
+                >
                   Preview extracted text
                 </summary>
-                <pre className="max-h-40 overflow-auto px-3 py-2 font-mono text-xs text-zinc-600 whitespace-pre-wrap">
-                  {markdown.slice(0, 2000)}{markdown.length > 2000 ? '\n…' : ''}
+                <pre
+                  className="max-h-40 overflow-auto px-3 py-2 font-mono text-xs whitespace-pre-wrap"
+                  style={{ color: '#71717a' }}
+                >
+                  {markdown.slice(0, 2000)}
+                  {markdown.length > 2000 ? '\n...' : ''}
                 </pre>
               </details>
             )}
           </div>
         ) : (
           <div className="flex flex-col gap-1">
-            <label htmlFor="resume-markdown" className="text-sm font-medium text-zinc-700">
-              Resume content <span className="text-zinc-400 font-normal">(Markdown or plain text)</span>
+            <label htmlFor="resume-markdown" style={labelStyle}>
+              Resume content{' '}
+              <span style={{ color: '#52525b', fontWeight: 400 }}>
+                (Markdown or plain text)
+              </span>
             </label>
             <textarea
               id="resume-markdown"
-              placeholder="Paste your resume here…"
+              placeholder="Paste your resume here..."
               value={markdown}
               onChange={(e) => setMarkdown(e.target.value)}
               rows={12}
-              className="rounded-lg border border-zinc-200 px-3 py-2 font-mono text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-200"
+              style={{ ...inputStyle, fontFamily: 'monospace', resize: 'vertical' }}
               disabled={isSubmitting}
             />
           </div>
         )}
 
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && (
+          <p className="text-sm" style={{ color: '#f87171' }}>
+            {error}
+          </p>
+        )}
 
         <div className="flex items-center gap-3">
           <button
             type="submit"
             disabled={isSubmitting || isParsing || !markdown.trim()}
-            className="bg-zinc-900 text-white rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50 hover:bg-zinc-700 transition-colors"
+            className="rounded-xl px-4 py-2 text-sm font-bold text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+            style={{
+              background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+              boxShadow: '0 0 16px rgba(124,58,237,0.3)',
+            }}
           >
-            {isSubmitting ? 'Saving…' : 'Save Resume'}
+            {isSubmitting ? 'Saving...' : 'Save Resume'}
           </button>
           <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
+            className="text-sm transition-colors disabled:opacity-40"
+            style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.09)',
+              borderRadius: 8,
+              color: '#71717a',
+              padding: '6px 12px',
+            }}
           >
             Cancel
           </button>

@@ -21,22 +21,42 @@ function formatDuration(ms: number | null): string | null {
 function ScoreBadge({ score }: { score: number | null }) {
   if (score === null) {
     return (
-      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-zinc-100 text-sm font-semibold text-zinc-400">
+      <span
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
+        style={{
+          background: 'rgba(255,255,255,0.06)',
+          border: '1px solid rgba(255,255,255,0.08)',
+          color: '#52525b',
+        }}
+      >
         &mdash;
       </span>
     );
   }
 
-  const colorClass =
+  const badgeStyle =
     score >= 70
-      ? 'bg-green-100 text-green-700'
+      ? {
+          background: 'rgba(34,197,94,0.12)',
+          border: '1px solid rgba(34,197,94,0.2)',
+          color: '#4ade80',
+        }
       : score >= 40
-        ? 'bg-yellow-100 text-yellow-700'
-        : 'bg-red-100 text-red-700';
+        ? {
+            background: 'rgba(234,179,8,0.12)',
+            border: '1px solid rgba(234,179,8,0.2)',
+            color: '#fbbf24',
+          }
+        : {
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            color: '#52525b',
+          };
 
   return (
     <span
-      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold ${colorClass}`}
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-semibold"
+      style={badgeStyle}
     >
       {score}
     </span>
@@ -67,23 +87,35 @@ export default async function HistoryPage() {
   });
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
-      <h2 className="mb-6 text-2xl font-semibold text-zinc-900">
+    <main className="px-10 py-9">
+      <h2
+        className="mb-6 tracking-tight"
+        style={{ fontSize: 22, fontWeight: 800, color: '#f4f4f5' }}
+      >
         Application History
       </h2>
 
       {applications.length === 0 ? (
-        <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center shadow-sm">
-          <p className="text-sm text-zinc-500">No saved applications yet.</p>
+        <div
+          className="rounded-2xl p-10 text-center"
+          style={{
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px solid rgba(255,255,255,0.08)',
+          }}
+        >
+          <p className="text-sm" style={{ color: '#52525b' }}>
+            No saved applications yet.
+          </p>
           <Link
             href="/app/new"
-            className="mt-4 inline-block text-sm font-medium text-zinc-900 underline underline-offset-4 hover:text-zinc-600"
+            className="mt-4 inline-block text-sm font-medium"
+            style={{ color: '#a855f7' }}
           >
             Start a new application
           </Link>
         </div>
       ) : (
-        <ul className="flex flex-col gap-4">
+        <ul className="flex flex-col gap-3">
           {applications.map((app) => {
             const analysis = app.analysisJson as { score: number } | null;
             const score =
@@ -96,26 +128,50 @@ export default async function HistoryPage() {
                 ? `${app.company} — ${app.role}`
                 : app.company ?? app.role ?? 'Untitled';
 
+            const duration = formatDuration(app.durationMs);
+
             return (
               <li key={app.id}>
                 <Link
                   href={`/app/history/${app.id}`}
-                  className="flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                  className="group flex items-center gap-4 rounded-2xl p-5 transition-all"
+                  style={{
+                    background: 'rgba(255,255,255,0.02)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget;
+                    el.style.background = 'rgba(124,58,237,0.04)';
+                    el.style.borderColor = 'rgba(124,58,237,0.2)';
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget;
+                    el.style.background = 'rgba(255,255,255,0.02)';
+                    el.style.borderColor = 'rgba(255,255,255,0.08)';
+                  }}
                 >
                   <ScoreBadge score={score} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-zinc-900">
+                    <p
+                      className="truncate font-semibold"
+                      style={{ fontSize: 13, color: '#d4d4d8' }}
+                    >
                       {title}
                     </p>
-                    <p className="mt-0.5 truncate text-xs text-zinc-400">
+                    <p
+                      className="mt-0.5 truncate"
+                      style={{ fontSize: 11, color: '#52525b' }}
+                    >
                       {app.provider} &middot; {app.model}
                     </p>
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-0.5">
-                    <p className="text-xs text-zinc-400">{formatDate(app.createdAt)}</p>
-                    {formatDuration(app.durationMs) && (
-                      <p className="text-xs text-zinc-400">
-                        Generated in {formatDuration(app.durationMs)}
+                    <p style={{ fontSize: 11, color: '#3f3f46' }}>
+                      {formatDate(app.createdAt)}
+                    </p>
+                    {duration && (
+                      <p style={{ fontSize: 11, color: '#3f3f46' }}>
+                        {duration}
                       </p>
                     )}
                   </div>

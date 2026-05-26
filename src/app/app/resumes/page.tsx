@@ -30,11 +30,17 @@ export default async function ResumesPage() {
   });
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
+    <main className="px-10 py-9">
       <ResumesPageClient>
         {resumes.length === 0 ? (
-          <div className="rounded-xl border border-zinc-200 bg-white p-10 text-center shadow-sm">
-            <p className="text-zinc-500 text-sm">
+          <div
+            className="rounded-2xl p-10 text-center"
+            style={{
+              background: 'rgba(255,255,255,0.02)',
+              border: '1px solid rgba(255,255,255,0.08)',
+            }}
+          >
+            <p className="text-sm" style={{ color: '#52525b' }}>
               No resumes yet. Click &ldquo;+ New Resume&rdquo; to add one.
             </p>
           </div>
@@ -43,21 +49,48 @@ export default async function ResumesPage() {
             {resumes.map((resume) => (
               <li
                 key={resume.id}
-                className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm"
+                className="rounded-2xl p-5 transition-all duration-200"
+                style={{
+                  background: 'rgba(255,255,255,0.02)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLLIElement).style.border =
+                    '1px solid rgba(124,58,237,0.2)';
+                  (e.currentTarget as HTMLLIElement).style.background =
+                    'rgba(124,58,237,0.04)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLLIElement).style.border =
+                    '1px solid rgba(255,255,255,0.08)';
+                  (e.currentTarget as HTMLLIElement).style.background =
+                    'rgba(255,255,255,0.02)';
+                }}
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-zinc-900 truncate">
+                      <span
+                        className="font-semibold truncate"
+                        style={{ color: '#d4d4d8' }}
+                      >
                         {resume.label}
                       </span>
                       {resume.isDefault && (
-                        <span className="shrink-0 rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600">
+                        <span
+                          className="shrink-0 rounded-full px-2 py-0.5 font-medium"
+                          style={{
+                            background: 'rgba(124,58,237,0.15)',
+                            border: '1px solid rgba(124,58,237,0.25)',
+                            color: '#c084fc',
+                            fontSize: 10,
+                          }}
+                        >
                           Default
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-zinc-500">
+                    <p className="text-xs" style={{ color: '#52525b' }}>
                       Created {formatDate(resume.createdAt)} &middot; Updated{' '}
                       {formatDate(resume.updatedAt)}
                     </p>

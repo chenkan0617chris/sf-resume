@@ -8,6 +8,28 @@ interface ResumeActionsProps {
   isDefault: boolean;
 }
 
+const ghostBase: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(255,255,255,0.09)',
+  borderRadius: 8,
+  color: '#71717a',
+  fontSize: 13,
+  padding: '4px 10px',
+  cursor: 'pointer',
+  transition: 'opacity 0.15s',
+};
+
+const dangerBase: React.CSSProperties = {
+  background: 'rgba(255,255,255,0.04)',
+  border: '1px solid rgba(239,68,68,0.4)',
+  borderRadius: 8,
+  color: '#f87171',
+  fontSize: 13,
+  padding: '4px 10px',
+  cursor: 'pointer',
+  transition: 'opacity 0.15s',
+};
+
 export default function ResumeActions({ resumeId, isDefault }: ResumeActionsProps) {
   const router = useRouter();
   const [isWorking, setIsWorking] = useState(false);
@@ -38,12 +60,12 @@ export default function ResumeActions({ resumeId, isDefault }: ResumeActionsProp
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex items-center gap-2">
       {!isDefault && (
         <button
           onClick={handleSetDefault}
           disabled={isWorking}
-          className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors disabled:opacity-40"
+          style={{ ...ghostBase, opacity: isWorking ? 0.4 : 1 }}
         >
           Set as default
         </button>
@@ -51,7 +73,7 @@ export default function ResumeActions({ resumeId, isDefault }: ResumeActionsProp
       <button
         onClick={handleDelete}
         disabled={isWorking}
-        className="text-sm text-red-500 hover:text-red-700 transition-colors disabled:opacity-40"
+        style={{ ...dangerBase, opacity: isWorking ? 0.4 : 1 }}
       >
         Delete
       </button>

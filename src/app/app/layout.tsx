@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { auth, signOut } from '@/lib/auth';
+import AppSidebar from '@/components/layout/AppSidebar';
 
 export default async function AppLayout({
   children,
@@ -18,64 +18,70 @@ export default async function AppLayout({
     .slice(0, 2)
     .toUpperCase();
 
-  return (
-    <div className="min-h-screen bg-zinc-50">
-      <header className="border-b border-zinc-200 bg-white px-6 py-4">
-        <div className="mx-auto flex max-w-4xl items-center justify-between">
-          <div className="flex items-center gap-6">
-            <Link href="/app" className="text-lg font-semibold text-zinc-900">
-              SF Resume
-            </Link>
-            <nav className="flex items-center gap-4">
-              <Link
-                href="/app"
-                className="text-sm text-zinc-600 hover:text-zinc-900"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/app/resumes"
-                className="text-sm text-zinc-600 hover:text-zinc-900"
-              >
-                My Resumes
-              </Link>
-              <Link href="/app/history" className="text-sm text-zinc-600 hover:text-zinc-900">History</Link>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              {session.user.image ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={session.user.image}
-                  alt={displayName}
-                  className="h-8 w-8 rounded-full"
-                />
-              ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium text-white">
-                  {initials}
-                </div>
-              )}
-              <span className="text-sm text-zinc-700">{displayName}</span>
-            </div>
-            <form
-              action={async () => {
-                'use server';
-                await signOut({ redirectTo: '/' });
-              }}
-            >
-              <button
-                type="submit"
-                className="text-sm text-zinc-500 hover:text-zinc-900"
-              >
-                Sign out
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
+  const signOutForm = (
+    <form
+      action={async () => {
+        'use server';
+        await signOut({ redirectTo: '/' });
+      }}
+    >
+      <button
+        type="submit"
+        title="Sign out"
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 0,
+          color: '#3f3f46',
+          display: 'flex',
+          alignItems: 'center',
+          flexShrink: 0,
+        }}
+      >
+        <svg
+          width={14}
+          height={14}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          />
+        </svg>
+      </button>
+    </form>
+  );
 
-      {children}
+  return (
+    <div
+      style={{
+        display: 'flex',
+        minHeight: '100vh',
+      }}
+    >
+      <AppSidebar
+        displayName={displayName}
+        initials={initials}
+        signOutForm={signOutForm}
+      />
+
+      <main
+        style={{
+          flex: 1,
+          overflowY: 'auto',
+          background: '#0d0d14',
+          backgroundImage:
+            'linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px)',
+          backgroundSize: '40px 40px',
+        }}
+      >
+        {children}
+      </main>
     </div>
   );
 }

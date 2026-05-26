@@ -56,27 +56,78 @@ export default function DownloadButtons({ markdown, filename, lang }: DownloadBu
     }
   }
 
+  const ghostButtonStyle: React.CSSProperties = {
+    background: 'rgba(255,255,255,0.04)',
+    border: '1px solid rgba(255,255,255,0.09)',
+    borderRadius: 8,
+    color: '#a1a1aa',
+    padding: '6px 14px',
+    fontSize: 12,
+    fontWeight: 500,
+    cursor: 'pointer',
+    transition: 'opacity 0.15s, color 0.15s',
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 6,
+  };
+
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-1.5">
       <div className="flex gap-2">
         <button
           type="button"
           onClick={handlePdf}
           disabled={pdfLoading}
-          className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            ...ghostButtonStyle,
+            opacity: pdfLoading ? 0.5 : 1,
+            cursor: pdfLoading ? 'not-allowed' : 'pointer',
+          }}
         >
-          {pdfLoading ? 'Generating…' : 'Download PDF'}
+          {pdfLoading ? (
+            <>
+              <span
+                className="inline-block h-3 w-3 animate-spin rounded-full"
+                style={{
+                  border: '2px solid rgba(124,58,237,0.3)',
+                  borderTopColor: '#a855f7',
+                }}
+              />
+              Generating…
+            </>
+          ) : (
+            'Download PDF'
+          )}
         </button>
         <button
           type="button"
           onClick={handleDocx}
           disabled={docxLoading}
-          className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:bg-zinc-50 hover:text-zinc-900 disabled:cursor-not-allowed disabled:opacity-50"
+          style={{
+            ...ghostButtonStyle,
+            opacity: docxLoading ? 0.5 : 1,
+            cursor: docxLoading ? 'not-allowed' : 'pointer',
+          }}
         >
-          {docxLoading ? 'Generating…' : 'Download .docx'}
+          {docxLoading ? (
+            <>
+              <span
+                className="inline-block h-3 w-3 animate-spin rounded-full"
+                style={{
+                  border: '2px solid rgba(124,58,237,0.3)',
+                  borderTopColor: '#a855f7',
+                }}
+              />
+              Generating…
+            </>
+          ) : (
+            'Download .docx'
+          )}
         </button>
       </div>
-      {error && <p className="text-xs text-red-600">{error}</p>}
+      {error && (
+        <p style={{ fontSize: 11, color: '#f87171' }}>{error}</p>
+      )}
     </div>
   );
 }

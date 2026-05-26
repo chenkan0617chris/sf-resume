@@ -1,26 +1,64 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Backgrounds */
+  --bg-base:     #0d0d14;
+  --bg-sunken:   #08080f;
+  --bg-surface:  #111118;
+  --bg-elevated: #16161f;
+
+  /* Borders */
+  --border-subtle:  rgba(124,58,237,0.12);
+  --border-default: rgba(124,58,237,0.20);
+  --border-strong:  rgba(124,58,237,0.35);
+
+  /* Accent violet */
+  --accent-900: #3b0764;
+  --accent-700: #6d28d9;
+  --accent-600: #7c3aed;
+  --accent-500: #8b5cf6;
+  --accent-400: #a855f7;
+  --accent-300: #c084fc;
+  --accent-200: #e9d5ff;
+
+  /* Text */
+  --text-primary:   #f4f4f5;
+  --text-secondary: #a1a1aa;
+  --text-muted:     #71717a;
+  --text-faint:     #52525b;
+  --text-ghost:     #3f3f46;
+
+  /* Status */
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger:  #f87171;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-primary);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans, Arial, Helvetica, sans-serif);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Grid background — applied to main page areas */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(124,58,237,0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Faint grid — used inside authenticated app main areas (lower opacity) */
+.grid-bg-faint {
+  background-image:
+    linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
