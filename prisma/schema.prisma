@@ -7,9 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")      // pooled (pgBouncer, port 6543) for runtime
-  directUrl = env("DIRECT_URL")        // direct (port 5432) for `prisma migrate`
+  provider = "postgresql"
 }
 
 // ─── Auth.js standard tables ──────────────────────────────────

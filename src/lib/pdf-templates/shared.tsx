@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import type {
   StructuredResume,
   ResumeProject,
+  SkillCategory,
 } from './types';
 
 export type RenderLang = 'en' | 'zh';
@@ -356,6 +357,9 @@ interface ProjectDraft extends ResumeProject {
   _closed?: boolean;
 }
 
+// Internal type for skill categories during parsing.
+type SkillCategoryDraft = SkillCategory;
+
 /**
  * Parse a Markdown resume into the structured shape. Returns `null` if the
  * result is unusable (no name AND no sections), signaling the caller to fall
@@ -366,6 +370,7 @@ export function parseResumeMarkdown(md: string): StructuredResume | null {
 
   const resume = emptyResume();
   const projects: ProjectDraft[] = [];
+  const skillCats: SkillCategoryDraft[] = [];
   const lines = md.replace(/\r\n?/g, '\n').split('\n');
 
   let section: SectionKey = 'basics';
@@ -501,7 +506,15 @@ export function parseResumeMarkdown(md: string): StructuredResume | null {
 
       case 'skills': {
         if (isBulletLine(raw)) {
-          resume.skills[skillsSub].push(...tokenizeSkills(bulletText(raw)));
+          const text = bulletText(raw);
+          const catMatch = text.match(/^([A-Za-z一-鿿][^:]{1,40}):\s*(.+)$/);
+          if (catMatch) {
+            const catItems = tokenizeSkills(catMatch[2]);
+            skillCats.push({ label: catMatch[1].trim(), items: catItems });
+            resume.skills[skillsSub].push(...catItems);
+          } else {
+            resume.skills[skillsSub].push(...tokenizeSkills(text));
+          }
         } else {
           const labelled = line.match(/^([A-Za-z一-鿿][\w\s一-鿿]+?)\s*[:：]\s*(.*)$/);
           if (labelled) {
@@ -546,6 +559,8 @@ export function parseResumeMarkdown(md: string): StructuredResume | null {
             description: '',
             bullets: [],
             link: linkMatch ? linkMatch[0] : '',
+            start: dateInfo?.start || '',
+            end: dateInfo?.end || '',
           });
         } else if (line.length > 0 && projects.length) {
           // Metadata / continuation line (e.g. "*Tech Stack: …*") — attach to
@@ -604,6 +619,8 @@ export function parseResumeMarkdown(md: string): StructuredResume | null {
 
   // Strip _closed before exposing.
   resume.projects = projects.map(({ _closed: _, ...rest }) => rest);
+
+  if (skillCats.length) resume.skillCategories = skillCats;
 
   // Dedupe skill tokens (case-insensitive).
   const dedupe = (arr: string[]) => {
