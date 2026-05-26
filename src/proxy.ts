@@ -1,9 +1,13 @@
-// Route protection. Anything under /app/* or /api/* (except /api/auth/* and
+// Route protection. Uses edge-safe auth config (no Prisma).
+// Anything under /app/* or /api/* (except /api/auth/* and
 // /api/stripe/webhook) requires a valid session.
 
-import { auth } from '@/lib/auth';
+import NextAuth from 'next-auth';
+import { authConfig } from '@/lib/auth.config';
 
-export default auth((req) => {
+const { auth } = NextAuth(authConfig);
+
+export default auth(function middleware(req) {
   const { pathname } = req.nextUrl;
 
   const isPublicApi =
@@ -25,6 +29,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  // Run on everything except static assets and Next internals.
   matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 };

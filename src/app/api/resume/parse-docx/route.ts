@@ -22,29 +22,25 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
   }
 
-  const isPdf =
-    file.type === 'application/pdf' ||
-    file.name?.toLowerCase().endsWith('.pdf');
-  if (!isPdf) {
+  const isDocx =
+    file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    file.name?.toLowerCase().endsWith('.docx');
+  if (!isDocx) {
     return NextResponse.json(
-      { error: 'INVALID_FILE_TYPE', message: 'Only PDF files are supported' },
+      { error: 'INVALID_FILE_TYPE', message: 'Only .docx files are supported' },
       { status: 400 }
     );
   }
 
-  const buffer = await file.arrayBuffer();
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
 
   try {
-    const { extractText, getDocumentProxy } = await import('unpdf');
-    const pdf = await getDocumentProxy(new Uint8Array(buffer));
-    const { text } = await extractText(pdf, { mergePages: true });
-    const extractedText = (Array.isArray(text) ? text.join('\n\n') : text).trim();
-    return NextResponse.json({ markdown: extractedText });
+    const mammoth = await import('mammoth');
+    const result = await mammoth.extractRawText({ buffer });
+    return NextResponse.json({ markdown: result.value.trim() });
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'Unknown error';
-    return NextResponse.json(
-      { error: 'PARSE_FAILED', message: msg },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'PARSE_FAILED', message: msg }, { status: 500 });
   }
 }

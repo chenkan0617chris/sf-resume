@@ -8,8 +8,8 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")      // pooled (pgBouncer, port 6543) for runtime
-  directUrl = env("DIRECT_URL")        // direct (port 5432) for `prisma migrate`
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 // ─── Auth.js standard tables ──────────────────────────────────
@@ -101,6 +101,7 @@ model Application {
   resultEditedMarkdown String?  @db.Text
   provider             String   // "anthropic" | "openai" | "deepseek"
   model                String
+  durationMs           Int?
   createdAt            DateTime @default(now())
 
   user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)

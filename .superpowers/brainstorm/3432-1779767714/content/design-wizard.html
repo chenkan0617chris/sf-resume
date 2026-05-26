@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SF Resume — Wizard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0d14; color: #f4f4f5; display: flex; flex-direction: column; }
+
+  .frame-label {
+    background: #08080f; color: #3f3f46;
+    font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    padding: 7px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
+  }
+
+  .app-frame { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── SIDEBAR (same as dashboard) ── */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: #08080f;
+    border-right: 1px solid rgba(124,58,237,0.15);
+    display: flex; flex-direction: column;
+    padding: 20px 12px; gap: 4px;
+  }
+  .sidebar-logo { display: flex; align-items: center; gap: 9px; padding: 6px 10px; margin-bottom: 20px; }
+  .sidebar-logo-mark {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-logo-mark svg { width: 16px; height: 16px; }
+  .sidebar-logo-name { font-size: 15px; font-weight: 700; color: #f4f4f5; letter-spacing: -0.3px; }
+  .sidebar-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #3f3f46; padding: 6px 10px 4px; margin-top: 8px;
+  }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+  .nav-item.active { background: rgba(124,58,237,0.18); border-color: rgba(124,58,237,0.3); }
+  .nav-icon { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .nav-item.active .nav-icon { background: rgba(124,58,237,0.2); }
+  .nav-item:not(.active) .nav-icon { background: rgba(255,255,255,0.05); }
+  .nav-icon svg { width: 16px; height: 16px; }
+  .nav-item.active .nav-icon svg { color: #a855f7; }
+  .nav-item:not(.active) .nav-icon svg { color: #52525b; }
+  .nav-label { font-size: 13px; font-weight: 600; }
+  .nav-item.active .nav-label { color: #e9d5ff; }
+  .nav-item:not(.active) .nav-label { color: #71717a; }
+  .sidebar-spacer { flex: 1; }
+  .sidebar-user { display: flex; align-items: center; gap: 9px; padding: 12px 10px 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0; background: linear-gradient(135deg,#7c3aed,#a855f7); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #fff; }
+  .user-info { min-width: 0; flex: 1; }
+  .user-name { font-size: 12px; font-weight: 600; color: #d4d4d8; }
+  .user-plan { font-size: 10px; color: #52525b; margin-top: 1px; }
+
+  /* ── MAIN ── */
+  .main {
+    flex: 1; overflow-y: auto;
+    background: #0d0d14;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    padding: 36px 40px;
+    display: flex; flex-direction: column;
+  }
+
+  /* ── STEP INDICATOR ── */
+  .step-indicator {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; margin-bottom: 36px; flex-shrink: 0;
+  }
+  .step-item { display: flex; align-items: center; }
+  .step-bubble-wrap { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .step-bubble {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; transition: all 0.2s;
+  }
+  .step-bubble.done { background: linear-gradient(135deg,#7c3aed,#a855f7); color: #fff; }
+  .step-bubble.active {
+    background: linear-gradient(135deg,#7c3aed,#a855f7); color: #fff;
+    box-shadow: 0 0 0 4px rgba(124,58,237,0.2), 0 0 16px rgba(124,58,237,0.4);
+  }
+  .step-bubble.future { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #52525b; }
+  .step-label { font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .step-label.active { color: #e9d5ff; }
+  .step-label.done { color: #7c3aed; }
+  .step-label.future { color: #3f3f46; }
+  .step-connector { width: 56px; height: 2px; margin: 0 6px; margin-bottom: 20px; border-radius: 2px; flex-shrink: 0; }
+  .step-connector.done { background: linear-gradient(90deg,#7c3aed,#a855f7); }
+  .step-connector.future { background: rgba(255,255,255,0.07); }
+
+  /* ── WIZARD CARD ── */
+  .wizard-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(124,58,237,0.18);
+    border-radius: 20px; padding: 32px;
+    flex: 1;
+  }
+
+  .step-title { font-size: 18px; font-weight: 800; color: #f4f4f5; letter-spacing: -0.3px; margin-bottom: 4px; }
+  .step-sub { font-size: 13px; color: #52525b; margin-bottom: 24px; }
+
+  /* ── Step 2 content (JD) ── */
+  .lang-toggle {
+    display: inline-flex; align-items: center; gap: 2px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px; padding: 3px; margin-bottom: 20px;
+  }
+  .lang-btn {
+    padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+  .lang-btn.active { background: rgba(124,58,237,0.25); color: #c084fc; border: 1px solid rgba(124,58,237,0.3); }
+  .lang-btn:not(.active) { color: #52525b; border: 1px solid transparent; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 12px; font-weight: 600; color: #71717a; }
+  .form-label span { color: #3f3f46; font-weight: 400; }
+  .form-input {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 10px; padding: 10px 14px;
+    font-size: 13px; color: #d4d4d8;
+    outline: none;
+  }
+  .form-input:focus { border-color: rgba(124,58,237,0.5); background: rgba(124,58,237,0.06); }
+  .form-input::placeholder { color: #3f3f46; }
+
+  .jd-textarea {
+    width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px; padding: 14px; resize: vertical;
+    font-size: 13px; color: #d4d4d8; line-height: 1.6; font-family: inherit;
+    min-height: 180px; outline: none;
+  }
+  .jd-textarea:focus { border-color: rgba(124,58,237,0.4); }
+  .char-count { font-size: 11px; color: #3f3f46; margin-top: 6px; }
+
+  /* ── BUTTONS ── */
+  .btn-row { display: flex; align-items: center; justify-content: space-between; margin-top: 24px; }
+  .btn-back {
+    padding: 10px 22px; border-radius: 10px; font-size: 13px; font-weight: 600;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.09);
+    color: #71717a; cursor: pointer;
+  }
+  .btn-primary {
+    padding: 10px 24px; border-radius: 10px; font-size: 13px; font-weight: 700;
+    background: linear-gradient(135deg,#7c3aed,#a855f7);
+    border: none; color: #fff; cursor: pointer;
+    box-shadow: 0 0 20px rgba(124,58,237,0.35);
+  }
+  .btn-primary:disabled { opacity: 0.4; box-shadow: none; }
+</style>
+</head>
+<body>
+
+<div class="frame-label">New Application — Step 2: Job Description (/app/new)</div>
+
+<div class="app-frame">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <span class="sidebar-logo-name">SF Resume</span>
+    </div>
+    <div class="sidebar-section-label">Workspace</div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+      <span class="nav-label">Dashboard</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+      <span class="nav-label">My Resumes</span>
+    </div>
+    <div class="nav-item active">
+      <div class="nav-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></div>
+      <span class="nav-label">New Application</span>
+    </div>
+    <div class="nav-item">
+      <div class="nav-icon"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+      <span class="nav-label">History</span>
+    </div>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-user">
+      <div class="avatar">C</div>
+      <div class="user-info">
+        <div class="user-name">Chris Chen</div>
+        <div class="user-plan">Free plan</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step-item">
+        <div class="step-bubble-wrap">
+          <div class="step-bubble done">
+            <svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <span class="step-label done">Select Resume</span>
+        </div>
+      </div>
+      <div class="step-connector done"></div>
+      <div class="step-item">
+        <div class="step-bubble-wrap">
+          <div class="step-bubble active">2</div>
+          <span class="step-label active">Job Description</span>
+        </div>
+      </div>
+      <div class="step-connector future"></div>
+      <div class="step-item">
+        <div class="step-bubble-wrap">
+          <div class="step-bubble future">3</div>
+          <span class="step-label future">Review &amp; Rewrite</span>
+        </div>
+      </div>
+      <div class="step-connector future"></div>
+      <div class="step-item">
+        <div class="step-bubble-wrap">
+          <div class="step-bubble future">4</div>
+          <span class="step-label future">Export PDF</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Wizard Card -->
+    <div class="wizard-card">
+      <div class="step-title">Job Description</div>
+      <div class="step-sub">Paste the full job description. The more detail, the better the analysis.</div>
+
+      <div class="lang-toggle">
+        <div class="lang-btn active">EN</div>
+        <div class="lang-btn">中文</div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Company name <span>(optional)</span></label>
+          <input class="form-input" type="text" placeholder="Stripe" value="Stripe">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Role / title <span>(optional)</span></label>
+          <input class="form-input" type="text" placeholder="Senior Software Engineer" value="Senior Software Engineer">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Job description <span style="color:#ef4444;">*</span></label>
+        <textarea class="jd-textarea" placeholder="Paste the full job description here...">We are looking for a Senior Software Engineer to join our infrastructure team. You will design and build distributed systems that process millions of payments daily...
+
+Requirements:
+• 5+ years experience with distributed systems
+• Strong proficiency in Go or Rust
+• Experience with Kubernetes and container orchestration
+• Background in payments infrastructure a plus</textarea>
+        <div class="char-count">482 characters</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-back">← Back</button>
+        <button class="btn-primary">Analyze →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

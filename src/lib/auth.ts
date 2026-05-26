@@ -1,33 +1,32 @@
-// Auth.js v5 configuration. Used by:
-//   - `app/api/auth/[...nextauth]/route.ts` (HTTP handlers)
-//   - middleware.ts (route protection)
-//   - server actions / route handlers (`await auth()` to read session)
-//
-// Database session strategy: every request hits Postgres to look up the
-// session, which keeps the cookie tiny and lets us revoke server-side.
+// Auth.js v5 full config (Node.js only — imports Prisma).
+// middleware.ts uses auth.config.ts instead to stay Edge-compatible.
 
 import NextAuth from 'next-auth';
-import Google from 'next-auth/providers/google';
 import { PrismaAdapter } from '@auth/prisma-adapter';
 import { prisma } from './prisma';
+import { authConfig } from './auth.config';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
-  providers: [
-    Google({
-      clientId: process.env.AUTH_GOOGLE_ID,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    }),
-  ],
-  session: { strategy: 'database' },
-  pages: { signIn: '/' },
+  // JWT strategy: session token is a signed cookie, no DB lookup needed
+  // in middleware. User + Account rows still written by PrismaAdapter on
+  // first sign-in. Switch to 'database' later if server-side revocation matters.
+  session: { strategy: 'jwt' },
   callbacks: {
-    async session({ session, user }) {
-      // Surface our app-specific fields (id, tier) on the session object.
+    async jwt({ token, user }) {
+      // `user` is only present on the first sign-in (from the DB via adapter).
+      if (user) {
+        token.id = user.id;
+        token.tier = (user as { tier?: string }).tier ?? 'free';
+      }
+      return token;
+    },
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = user.id;
-        // @ts-expect-error — augmenting next-auth types below
-        session.user.tier = (user as { tier?: string }).tier ?? 'free';
+        session.user.id = token.id as string;
+        // @ts-expect-error — augmenting next-auth types
+        session.user.tier = token.tier ?? 'free';
       }
       return session;
     },

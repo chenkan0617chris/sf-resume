@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SF Resume — App Shell</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0d14; color: #f4f4f5; display: flex; flex-direction: column; }
+
+  .frame-label {
+    background: #08080f; color: #3f3f46;
+    font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase;
+    padding: 7px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0;
+  }
+
+  .app-frame {
+    display: flex; flex: 1; overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px; flex-shrink: 0;
+    background: #08080f;
+    border-right: 1px solid rgba(124,58,237,0.15);
+    display: flex; flex-direction: column;
+    padding: 20px 12px;
+    gap: 4px;
+  }
+
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 9px;
+    padding: 6px 10px; margin-bottom: 20px;
+  }
+  .sidebar-logo-mark {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sidebar-logo-mark svg { width: 16px; height: 16px; }
+  .sidebar-logo-name { font-size: 15px; font-weight: 700; color: #f4f4f5; letter-spacing: -0.3px; }
+
+  .sidebar-section-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #3f3f46; padding: 6px 10px 4px; margin-top: 8px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: 8px; cursor: pointer;
+  }
+  .nav-item.active {
+    background: rgba(124,58,237,0.18);
+    border: 1px solid rgba(124,58,237,0.3);
+  }
+  .nav-item:not(.active) { border: 1px solid transparent; }
+
+  .nav-icon {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-item.active .nav-icon { background: rgba(124,58,237,0.2); }
+  .nav-item:not(.active) .nav-icon { background: rgba(255,255,255,0.05); }
+  .nav-icon svg { width: 16px; height: 16px; }
+  .nav-item.active .nav-icon svg { color: #a855f7; }
+  .nav-item:not(.active) .nav-icon svg { color: #52525b; }
+
+  .nav-label { font-size: 13px; font-weight: 600; }
+  .nav-item.active .nav-label { color: #e9d5ff; }
+  .nav-item:not(.active) .nav-label { color: #71717a; }
+
+  .sidebar-spacer { flex: 1; }
+
+  .sidebar-user {
+    display: flex; align-items: center; gap: 9px;
+    padding: 12px 10px 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .avatar {
+    width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+    background: linear-gradient(135deg, #7c3aed, #a855f7);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: #fff;
+  }
+  .user-info { min-width: 0; flex: 1; }
+  .user-name { font-size: 12px; font-weight: 600; color: #d4d4d8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-plan { font-size: 10px; color: #52525b; margin-top: 1px; }
+  .signout-btn { font-size: 11px; color: #3f3f46; cursor: pointer; flex-shrink: 0; }
+
+  /* ── MAIN CONTENT ── */
+  .main {
+    flex: 1; overflow-y: auto;
+    background: #0d0d14;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    padding: 36px 40px;
+  }
+
+  .page-header { margin-bottom: 28px; }
+  .page-title { font-size: 22px; font-weight: 800; color: #f4f4f5; letter-spacing: -0.5px; }
+  .page-sub { font-size: 13px; color: #52525b; margin-top: 4px; }
+
+  .action-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 32px; }
+  .action-card {
+    border-radius: 16px; padding: 26px; cursor: pointer; position: relative; overflow: hidden;
+  }
+  .action-card.primary {
+    background: linear-gradient(135deg, rgba(124,58,237,0.25), rgba(168,85,247,0.15));
+    border: 1px solid rgba(124,58,237,0.4);
+  }
+  .action-card.secondary {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .action-card-glow {
+    position: absolute; top: -30px; right: -30px; width: 130px; height: 130px; border-radius: 50%;
+    background: radial-gradient(ellipse, rgba(124,58,237,0.35), transparent 70%);
+    pointer-events: none;
+  }
+  .action-icon {
+    width: 44px; height: 44px; border-radius: 12px; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: center; position: relative;
+  }
+  .action-card.primary .action-icon { background: rgba(124,58,237,0.3); border: 1px solid rgba(168,85,247,0.4); }
+  .action-card.secondary .action-icon { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); }
+  .action-icon svg { width: 20px; height: 20px; }
+  .action-card.primary .action-icon svg { color: #c084fc; }
+  .action-card.secondary .action-icon svg { color: #52525b; }
+  .action-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; position: relative; }
+  .action-card.primary .action-title { color: #f0e6ff; }
+  .action-card.secondary .action-title { color: #d4d4d8; }
+  .action-desc { font-size: 12px; line-height: 1.55; position: relative; }
+  .action-card.primary .action-desc { color: #a78bfa; }
+  .action-card.secondary .action-desc { color: #52525b; }
+  .action-arrow { position: absolute; bottom: 22px; right: 22px; font-size: 16px; }
+  .action-card.primary .action-arrow { color: #7c3aed; }
+  .action-card.secondary .action-arrow { color: #3f3f46; }
+
+  .section-heading {
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #3f3f46; margin-bottom: 12px;
+  }
+  .activity-list { display: flex; flex-direction: column; gap: 8px; }
+  .activity-item {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px; padding: 14px 18px; cursor: pointer;
+  }
+  .activity-item:hover { border-color: rgba(124,58,237,0.2); background: rgba(124,58,237,0.04); }
+  .score-badge {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800;
+  }
+  .score-high { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
+  .score-mid  { background: rgba(234,179,8,0.12);  color: #fbbf24; border: 1px solid rgba(234,179,8,0.2); }
+  .score-low  { background: rgba(239,68,68,0.12);  color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
+  .activity-info { flex: 1; min-width: 0; }
+  .activity-title { font-size: 13px; font-weight: 600; color: #d4d4d8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .activity-meta  { font-size: 11px; color: #52525b; margin-top: 2px; }
+  .activity-date  { font-size: 11px; color: #3f3f46; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<div class="frame-label">App Dashboard — /app (logged in)</div>
+
+<div class="app-frame">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">
+        <svg fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <span class="sidebar-logo-name">SF Resume</span>
+    </div>
+
+    <div class="sidebar-section-label">Workspace</div>
+
+    <div class="nav-item active">
+      <div class="nav-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+      </div>
+      <span class="nav-label">Dashboard</span>
+    </div>
+
+    <div class="nav-item">
+      <div class="nav-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+      </div>
+      <span class="nav-label">My Resumes</span>
+    </div>
+
+    <div class="nav-item">
+      <div class="nav-icon">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+      </div>
+      <span class="nav-label">History</span>
+    </div>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sidebar-user">
+      <div class="avatar">C</div>
+      <div class="user-info">
+        <div class="user-name">Chris Chen</div>
+        <div class="user-plan">Free plan</div>
+      </div>
+      <div class="signout-btn">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="page-header">
+      <div class="page-title">Welcome back, Chris</div>
+      <div class="page-sub">Ready for your next application?</div>
+    </div>
+
+    <div class="action-cards">
+      <div class="action-card primary">
+        <div class="action-card-glow"></div>
+        <div class="action-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+          </svg>
+        </div>
+        <div class="action-title">New Application</div>
+        <div class="action-desc">Tailor your resume to a job description and export a PDF.</div>
+        <div class="action-arrow">→</div>
+      </div>
+      <div class="action-card secondary">
+        <div class="action-icon">
+          <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+        </div>
+        <div class="action-title">My Resumes</div>
+        <div class="action-desc">Upload or edit your base resumes.</div>
+        <div class="action-arrow">→</div>
+      </div>
+    </div>
+
+    <div class="section-heading">Recent Applications</div>
+    <div class="activity-list">
+      <div class="activity-item">
+        <div class="score-badge score-high">87</div>
+        <div class="activity-info">
+          <div class="activity-title">Stripe — Senior Software Engineer</div>
+          <div class="activity-meta">deepseek · Generated in 22s</div>
+        </div>
+        <div class="activity-date">May 25</div>
+      </div>
+      <div class="activity-item">
+        <div class="score-badge score-mid">61</div>
+        <div class="activity-info">
+          <div class="activity-title">Figma — Staff Engineer, Infrastructure</div>
+          <div class="activity-meta">deepseek · Generated in 18s</div>
+        </div>
+        <div class="activity-date">May 23</div>
+      </div>
+      <div class="activity-item">
+        <div class="score-badge score-low">38</div>
+        <div class="activity-info">
+          <div class="activity-title">OpenAI — Research Engineer</div>
+          <div class="activity-meta">deepseek · Generated in 31s</div>
+        </div>
+        <div class="activity-date">May 20</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

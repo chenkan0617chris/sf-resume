@@ -1,16 +1,9 @@
 // POST /api/rewrite — streaming resume rewrite. Returns text/event-stream.
-// MUST run on Edge runtime to bypass Vercel Hobby's 60s function ceiling
-// (Edge has no max duration as long as bytes keep flowing).
 //
 // SSE wire format (matches what the client useLLM hook expects):
 //   data: {"type":"chunk","content":"<cumulative full text so far>"}
 //   data: {"type":"done"}
 //   data: {"type":"error","message":"..."}
-//
-// NOTE: Edge runtime can't talk to Postgres via the standard Prisma client
-// because it bundles a Node-native engine. For quota checks we use a small
-// fetch-based wrapper that hits the local /api/_internal/quota route which
-// runs Node and does the DB work. Stubbed for now — wired in Phase 1 W2.
 
 import { auth } from '@/lib/auth';
 import {
@@ -20,7 +13,8 @@ import {
 } from '@/lib/providers';
 import type { OutputLang } from '@/lib/providers/shared';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 interface RewriteBody {
   resumeMarkdown: string;

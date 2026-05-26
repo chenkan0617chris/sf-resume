@@ -31,6 +31,8 @@ export interface ResumeProject {
   description: string;
   bullets: string[];
   link: string;
+  start?: string;
+  end?: string;
 }
 
 export interface ResumeCertification {
@@ -44,6 +46,11 @@ export interface ResumeSkills {
   soft: string[];
 }
 
+export interface SkillCategory {
+  label: string;
+  items: string[];
+}
+
 export interface StructuredResume {
   basics: ResumeBasics;
   summary: string;
@@ -52,4 +59,5 @@ export interface StructuredResume {
   skills: ResumeSkills;
   projects: ResumeProject[];
   certifications: ResumeCertification[];
+  skillCategories?: SkillCategory[];
 }

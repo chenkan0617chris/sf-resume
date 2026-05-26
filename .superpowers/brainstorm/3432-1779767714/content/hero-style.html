@@ -1,0 +1,75 @@
+<h2>Landing page hero style?</h2>
+<p class="subtitle">All use the Midnight Violet palette — pick the visual treatment for the hero section background</p>
+
+<div class="cards">
+
+  <!-- Option A: Radial glow + grid -->
+  <div class="card" data-choice="glow-grid" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d0d14;height:220px;border-radius:8px 8px 0 0;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
+      <!-- grid lines -->
+      <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(124,58,237,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,0.08) 1px,transparent 1px);background-size:32px 32px;"></div>
+      <!-- central glow -->
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:280px;height:180px;border-radius:50%;background:radial-gradient(ellipse,rgba(124,58,237,0.35) 0%,transparent 70%);pointer-events:none;"></div>
+      <!-- content -->
+      <div style="position:relative;text-align:center;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:2px;color:#a855f7;text-transform:uppercase;margin-bottom:8px;">AI-Powered Resume Tailoring</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px;">Land More Interviews<br><span style="color:#a855f7;">With Every Application</span></div>
+        <div style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:20px;padding:8px 20px;font-size:11px;font-weight:700;color:#fff;">Get Started Free →</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Glow Grid</h3>
+      <p>Subtle grid lines + central purple radial glow. Clean and sharp — similar to Linear, Supabase. Professional and readable.</p>
+    </div>
+  </div>
+
+  <!-- Option B: Animated beam / aurora -->
+  <div class="card" data-choice="aurora-beam" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0d0d14;height:220px;border-radius:8px 8px 0 0;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;">
+      <!-- aurora blobs -->
+      <div style="position:absolute;top:-20px;left:-40px;width:220px;height:180px;border-radius:50%;background:radial-gradient(ellipse,rgba(124,58,237,0.3),transparent 70%);filter:blur(30px);"></div>
+      <div style="position:absolute;bottom:-30px;right:-20px;width:200px;height:160px;border-radius:50%;background:radial-gradient(ellipse,rgba(168,85,247,0.25),transparent 70%);filter:blur(25px);"></div>
+      <div style="position:absolute;top:20px;right:20px;width:120px;height:100px;border-radius:50%;background:radial-gradient(ellipse,rgba(236,72,153,0.15),transparent 70%);filter:blur(20px);"></div>
+      <!-- beam -->
+      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:2px;height:100%;background:linear-gradient(180deg,transparent,rgba(168,85,247,0.6),transparent);"></div>
+      <!-- content -->
+      <div style="position:relative;text-align:center;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:2px;color:#c084fc;text-transform:uppercase;margin-bottom:8px;">AI-Powered Resume Tailoring</div>
+        <div style="font-size:22px;font-weight:800;color:#fff;line-height:1.2;margin-bottom:10px;">Land More Interviews<br><span style="background:linear-gradient(90deg,#a855f7,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">With Every Application</span></div>
+        <div style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:20px;padding:8px 20px;font-size:11px;font-weight:700;color:#fff;">Get Started Free →</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Aurora Beams</h3>
+      <p>Soft glowing blobs + a vertical light beam. Dreamy and dramatic — feels like magic. Similar to shadcn/ui, Framer, some AI startups.</p>
+    </div>
+  </div>
+
+  <!-- Option C: Glassmorphism card hero -->
+  <div class="card" data-choice="glass-hero" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(135deg,#0d0d14 0%,#130820 50%,#0d0d14 100%);height:220px;border-radius:8px 8px 0 0;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:16px;gap:12px;">
+      <!-- bg glow -->
+      <div style="position:absolute;top:30%;left:20%;width:160px;height:120px;border-radius:50%;background:radial-gradient(ellipse,rgba(124,58,237,0.4),transparent 70%);filter:blur(20px);"></div>
+      <!-- left: text -->
+      <div style="position:relative;flex:1;min-width:0;">
+        <div style="font-size:9px;font-weight:600;letter-spacing:2px;color:#a855f7;text-transform:uppercase;margin-bottom:6px;">AI Resume Tailoring</div>
+        <div style="font-size:16px;font-weight:800;color:#fff;line-height:1.3;margin-bottom:8px;">Land the job<br><span style="color:#c084fc;">you deserve</span></div>
+        <div style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#a855f7);border-radius:14px;padding:6px 14px;font-size:10px;font-weight:700;color:#fff;">Try Free →</div>
+      </div>
+      <!-- right: glass card preview -->
+      <div style="position:relative;background:rgba(255,255,255,0.05);backdrop-filter:blur(12px);border:1px solid rgba(168,85,247,0.25);border-radius:12px;padding:12px;width:130px;flex-shrink:0;">
+        <div style="font-size:9px;color:#c084fc;font-weight:600;margin-bottom:6px;">MATCH SCORE</div>
+        <div style="font-size:22px;font-weight:800;background:linear-gradient(90deg,#a855f7,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">87%</div>
+        <div style="height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin:6px 0;">
+          <div style="width:87%;height:3px;border-radius:2px;background:linear-gradient(90deg,#7c3aed,#a855f7);"></div>
+        </div>
+        <div style="font-size:8px;color:#9ca3af;margin-top:4px;">3 gaps found</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>Split Hero + Glass Card</h3>
+      <p>Text on left, a floating glassmorphic preview card on right. Shows the product immediately. More grounded and SaaS-like.</p>
+    </div>
+  </div>
+
+</div>
