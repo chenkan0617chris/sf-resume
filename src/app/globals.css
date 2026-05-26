@@ -62,3 +62,14 @@ body {
     linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
   background-size: 40px 40px;
 }
+
+/* Dark card with violet hover — use on server components where JS handlers aren't allowed */
+.dark-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.15s, border-color 0.15s;
+}
+.dark-card:hover {
+  background: rgba(124,58,237,0.04);
+  border-color: rgba(124,58,237,0.2);
+}

@@ -49,23 +49,7 @@ export default async function ResumesPage() {
             {resumes.map((resume) => (
               <li
                 key={resume.id}
-                className="rounded-2xl p-5 transition-all duration-200"
-                style={{
-                  background: 'rgba(255,255,255,0.02)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLLIElement).style.border =
-                    '1px solid rgba(124,58,237,0.2)';
-                  (e.currentTarget as HTMLLIElement).style.background =
-                    'rgba(124,58,237,0.04)';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLLIElement).style.border =
-                    '1px solid rgba(255,255,255,0.08)';
-                  (e.currentTarget as HTMLLIElement).style.background =
-                    'rgba(255,255,255,0.02)';
-                }}
+                className="dark-card rounded-2xl p-5"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex flex-col gap-1 min-w-0">

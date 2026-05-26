@@ -150,14 +150,7 @@ export default async function HistoryDetailPage({
       {/* Back link */}
       <Link
         href="/app/history"
-        className="mb-7 inline-flex items-center gap-1 text-sm transition-colors"
-        style={{ color: '#71717a' }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLAnchorElement).style.color = '#a1a1aa';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLAnchorElement).style.color = '#71717a';
-        }}
+        className="mb-7 inline-flex items-center gap-1 text-sm transition-colors text-[#71717a] hover:text-[#a1a1aa]"
       >
         &larr; History
       </Link>

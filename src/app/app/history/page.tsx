@@ -134,21 +134,7 @@ export default async function HistoryPage() {
               <li key={app.id}>
                 <Link
                   href={`/app/history/${app.id}`}
-                  className="group flex items-center gap-4 rounded-2xl p-5 transition-all"
-                  style={{
-                    background: 'rgba(255,255,255,0.02)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget;
-                    el.style.background = 'rgba(124,58,237,0.04)';
-                    el.style.borderColor = 'rgba(124,58,237,0.2)';
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget;
-                    el.style.background = 'rgba(255,255,255,0.02)';
-                    el.style.borderColor = 'rgba(255,255,255,0.08)';
-                  }}
+                  className="dark-card group flex items-center gap-4 rounded-2xl p-5"
                 >
                   <ScoreBadge score={score} />
                   <div className="min-w-0 flex-1">
