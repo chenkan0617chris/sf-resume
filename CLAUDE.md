@@ -52,7 +52,7 @@ Components and route handlers MUST NOT import provider modules client-side. Rout
 
 | Route | Runtime | Why |
 |---|---|---|
-| `/api/rewrite` | **edge** | Streaming SSE; Vercel Hobby Node functions have 60s ceiling but Edge has no max-duration while data flows |
+| `/api/rewrite` | **nodejs** | Streaming SSE with `maxDuration=60`; typical generation is 18–31s. Edge was avoided due to 1 MB bundle size limit on Vercel Hobby. |
 | `/api/analyze` | nodejs | Returns JSON in one shot; uses Prisma for quota |
 | `/api/resume/*`, `/api/usage`, `/api/application/*` | nodejs | All use Prisma |
 | `/api/stripe/webhook` | nodejs | Uses Stripe SDK + Prisma; public (no auth middleware) |
