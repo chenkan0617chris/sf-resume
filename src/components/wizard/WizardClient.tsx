@@ -756,7 +756,10 @@ function GapAnalysisPanel({ analysis }: { analysis: AnalysisJson }) {
             Gaps ({gaps.length})
           </p>
           <ul className="space-y-3">
-            {gaps.map((gap, i) => {
+            {[...gaps].sort((a, b) => {
+              const order = { matched: 0, partial: 1, missing: 2 };
+              return (order[a.status] ?? 3) - (order[b.status] ?? 3);
+            }).map((gap, i) => {
               const sc = statusConfig[gap.status];
               return (
                 <li
@@ -840,52 +843,50 @@ function Step3({
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Left: Gap Analysis */}
-        <div className="space-y-1">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-[#3f3f46]">
-            Gap Analysis
-          </h3>
-          {analysis && <GapAnalysisPanel analysis={analysis} />}
-        </div>
+      {/* Gap Analysis — full width */}
+      <div className="space-y-1">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#3f3f46]">
+          Gap Analysis
+        </h3>
+        {analysis && <GapAnalysisPanel analysis={analysis} />}
+      </div>
 
-        {/* Right: Generate CTA */}
-        <div className="flex flex-col gap-4">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-[#3f3f46]">
-            Tailored Resume
-          </h3>
+      {/* Tailored Resume — bottom row */}
+      <div className="flex flex-col gap-4">
+        <h3 className="text-sm font-semibold uppercase tracking-wide text-[#3f3f46]">
+          Tailored Resume
+        </h3>
+        <div
+          className="flex flex-col items-center justify-center rounded-xl px-6 py-10 text-center"
+          style={{
+            background: 'rgba(255,255,255,0.02)',
+            border: '1px dashed rgba(124,58,237,0.25)',
+          }}
+        >
           <div
-            className="flex flex-col items-center justify-center rounded-xl px-6 py-12 text-center"
+            className="mb-4 flex h-12 w-12 items-center justify-center rounded-full text-white"
+            style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}
+          >
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <p className="mb-1 text-sm font-medium text-[#d4d4d8]">Ready to generate</p>
+          <p className="mb-6 text-xs text-[#52525b]">
+            Your resume will be tailored to the job description and automatically saved.
+          </p>
+          <button
+            type="button"
+            onClick={onGenerate}
+            className="px-6 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
             style={{
-              background: 'rgba(255,255,255,0.02)',
-              border: '1px dashed rgba(124,58,237,0.25)',
+              background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
+              boxShadow: '0 0 20px rgba(124,58,237,0.35)',
+              borderRadius: 10,
             }}
           >
-            <div
-              className="mb-4 flex h-12 w-12 items-center justify-center rounded-full text-white"
-              style={{ background: 'linear-gradient(135deg,#7c3aed,#a855f7)' }}
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <p className="mb-1 text-sm font-medium text-[#d4d4d8]">Ready to generate</p>
-            <p className="mb-6 text-xs text-[#52525b]">
-              Your resume will be tailored to the job description and automatically saved.
-            </p>
-            <button
-              type="button"
-              onClick={onGenerate}
-              className="px-6 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
-              style={{
-                background: 'linear-gradient(135deg,#7c3aed,#a855f7)',
-                boxShadow: '0 0 20px rgba(124,58,237,0.35)',
-                borderRadius: 10,
-              }}
-            >
-              Generate Tailored Resume
-            </button>
-          </div>
+            Generate Tailored Resume
+          </button>
         </div>
       </div>
 
