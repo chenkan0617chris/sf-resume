@@ -44,6 +44,7 @@ interface CreateApplicationBody {
   resultMarkdown?: string;
   provider: string;
   model: string;
+  durationMs?: number;
 }
 
 export async function POST(req: Request) {
@@ -85,6 +86,7 @@ export async function POST(req: Request) {
       resultMarkdown: body.resultMarkdown ?? null,
       provider: body.provider,
       model: body.model,
+      durationMs: typeof body.durationMs === 'number' ? body.durationMs : null,
     },
   });
 

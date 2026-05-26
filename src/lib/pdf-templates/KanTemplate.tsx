@@ -25,8 +25,8 @@ function makeStyles(lang: RenderLang) {
     },
     // ── Header ──
     header: { alignItems: 'center', marginBottom: 10 },
-    headerName: { fontSize: 22, fontWeight: 'bold', letterSpacing: 2, marginBottom: 4 },
-    headerContact: { fontSize: 9.5, color: '#222', textAlign: 'center' },
+    headerName: { fontSize: 22, fontWeight: 'bold', letterSpacing: 2, marginBottom: 8 },
+    headerContact: { fontSize: 9.5, color: '#222', textAlign: 'center', lineHeight: 1.6 },
     // ── Section ──
     section: { marginTop: 10 },
     sectionTitle: {

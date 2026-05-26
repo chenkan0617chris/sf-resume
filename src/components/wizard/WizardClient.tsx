@@ -55,7 +55,7 @@ interface WizardState {
   processingView: boolean;
   processingPhase: 'rewriting' | 'saving' | null;
   processingError: string | null;
-  snackbar: { appId: string } | null;
+  snackbar: { appId: string; durationMs: number } | null;
 }
 
 type WizardAction =
@@ -87,7 +87,7 @@ type WizardAction =
   | { type: 'SET_PROCESSING_PHASE'; phase: 'rewriting' | 'saving' | null }
   | { type: 'SET_PROCESSING_ERROR'; error: string }
   | { type: 'CANCEL_PROCESSING' }
-  | { type: 'SHOW_SNACKBAR'; appId: string }
+  | { type: 'SHOW_SNACKBAR'; appId: string; durationMs: number }
   | { type: 'DISMISS_SNACKBAR' };
 
 function reducer(state: WizardState, action: WizardAction): WizardState {
@@ -153,7 +153,7 @@ function reducer(state: WizardState, action: WizardAction): WizardState {
     case 'CANCEL_PROCESSING':
       return { ...state, processingView: false, processingPhase: null, processingError: null };
     case 'SHOW_SNACKBAR':
-      return { ...state, processingView: false, processingPhase: null, snackbar: { appId: action.appId }, step: 4, savedApplicationId: action.appId };
+      return { ...state, processingView: false, processingPhase: null, snackbar: { appId: action.appId, durationMs: action.durationMs }, step: 4, savedApplicationId: action.appId };
     case 'DISMISS_SNACKBAR':
       return { ...state, snackbar: null };
     default:
@@ -1064,11 +1064,14 @@ function ProcessingScreen({
 
 // ─── Snackbar ─────────────────────────────────────────────────────────────────
 
-function Snackbar({ onDismiss }: { onDismiss: () => void }) {
+function Snackbar({ durationMs, onDismiss }: { durationMs: number; onDismiss: () => void }) {
   useEffect(() => {
     const t = setTimeout(onDismiss, 8000);
     return () => clearTimeout(t);
   }, [onDismiss]);
+
+  const secs = Math.round(durationMs / 1000);
+  const durationLabel = secs >= 60 ? `${Math.floor(secs / 60)}m ${secs % 60}s` : `${secs}s`;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-xl bg-zinc-900 px-5 py-4 text-white shadow-2xl">
@@ -1079,7 +1082,7 @@ function Snackbar({ onDismiss }: { onDismiss: () => void }) {
       </span>
       <div>
         <p className="text-sm font-semibold">Resume ready!</p>
-        <p className="text-xs text-zinc-400">Your tailored resume has been saved.</p>
+        <p className="text-xs text-zinc-400">Generated in {durationLabel} &middot; saved to history.</p>
       </div>
       <a
         href="/app/history"
@@ -1159,6 +1162,7 @@ export default function WizardClient({ userName = '' }: { userName?: string }) {
     dispatch({ type: 'SET_RESULT_EDITED_MARKDOWN', text: '' });
     dispatch({ type: 'SET_REWRITE_DONE', value: false });
 
+    const startTime = Date.now();
     let finalMd = '';
 
     try {
@@ -1212,6 +1216,8 @@ export default function WizardClient({ userName = '' }: { userName?: string }) {
 
       dispatch({ type: 'SET_PROCESSING_PHASE', phase: 'saving' });
 
+      const durationMs = Date.now() - startTime;
+
       const saveRes = await fetch('/api/application', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1226,6 +1232,7 @@ export default function WizardClient({ userName = '' }: { userName?: string }) {
           resultMarkdown: finalMd,
           provider: 'deepseek',
           model: 'deepseek-chat',
+          durationMs,
         }),
       });
 
@@ -1236,7 +1243,7 @@ export default function WizardClient({ userName = '' }: { userName?: string }) {
       }
 
       const saveData = await saveRes.json();
-      dispatch({ type: 'SHOW_SNACKBAR', appId: saveData.application.id });
+      dispatch({ type: 'SHOW_SNACKBAR', appId: saveData.application.id, durationMs });
     } catch (err) {
       dispatch({
         type: 'SET_PROCESSING_ERROR',
@@ -1302,7 +1309,10 @@ export default function WizardClient({ userName = '' }: { userName?: string }) {
 
       {/* Snackbar */}
       {state.snackbar && (
-        <Snackbar onDismiss={() => dispatch({ type: 'DISMISS_SNACKBAR' })} />
+        <Snackbar
+          durationMs={state.snackbar.durationMs}
+          onDismiss={() => dispatch({ type: 'DISMISS_SNACKBAR' })}
+        />
       )}
     </>
   );

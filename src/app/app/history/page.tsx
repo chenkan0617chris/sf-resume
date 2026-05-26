@@ -11,6 +11,13 @@ function formatDate(date: Date): string {
   });
 }
 
+function formatDuration(ms: number | null): string | null {
+  if (!ms) return null;
+  const s = Math.round(ms / 1000);
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${s % 60}s`;
+}
+
 function ScoreBadge({ score }: { score: number | null }) {
   if (score === null) {
     return (
@@ -52,6 +59,7 @@ export default async function HistoryPage() {
       provider: true,
       model: true,
       analysisJson: true,
+      durationMs: true,
       createdAt: true,
     },
     orderBy: { createdAt: 'desc' },
@@ -103,9 +111,14 @@ export default async function HistoryPage() {
                       {app.provider} &middot; {app.model}
                     </p>
                   </div>
-                  <p className="shrink-0 text-xs text-zinc-400">
-                    {formatDate(app.createdAt)}
-                  </p>
+                  <div className="flex shrink-0 flex-col items-end gap-0.5">
+                    <p className="text-xs text-zinc-400">{formatDate(app.createdAt)}</p>
+                    {formatDuration(app.durationMs) && (
+                      <p className="text-xs text-zinc-400">
+                        Generated in {formatDuration(app.durationMs)}
+                      </p>
+                    )}
+                  </div>
                 </Link>
               </li>
             );

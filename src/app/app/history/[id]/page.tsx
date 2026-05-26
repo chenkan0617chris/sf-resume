@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import type { AnalysisJson } from '@/lib/providers/shared';
 import DownloadButton from '@/components/history/DownloadButton';
+import PdfPreview from '@/components/history/PdfPreview';
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString('en-US', {
@@ -104,7 +105,7 @@ export default async function HistoryDetailPage({
       .toLowerCase() || 'resume';
 
   return (
-    <main className="mx-auto max-w-4xl px-6 py-10">
+    <main className="mx-auto max-w-6xl px-6 py-10">
       {/* Back link */}
       <Link
         href="/app/history"
@@ -134,121 +135,124 @@ export default async function HistoryDetailPage({
         </div>
       </div>
 
-      {/* Gap Analysis panel */}
-      {analysis && (
-        <section className="mb-6 rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500">
-            Gap Analysis
-          </h3>
-
-          {/* Score breakdown */}
-          <div className="mb-5 flex flex-col gap-2">
-            {(
-              ['skills', 'experience', 'keywords', 'education'] as const
-            ).map((key) => (
-              <ProgressBar
-                key={key}
-                label={key}
-                value={analysis.scoreBreakdown[key]}
-              />
-            ))}
-          </div>
-
-          {/* Summary */}
-          <p className="mb-5 text-sm text-zinc-700">{analysis.summary}</p>
-
-          {/* Gaps list */}
-          {analysis.gaps.length > 0 && (
-            <div className="mb-5">
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                Gaps
-              </h4>
-              <ul className="flex flex-col gap-2">
-                {analysis.gaps.map((gap, i) => (
-                  <li
-                    key={i}
-                    className="rounded-lg border border-zinc-100 bg-zinc-50 p-3"
-                  >
-                    <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <span className="font-medium text-zinc-800 text-sm">
-                        {gap.item}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[gap.status] ?? ''}`}
-                      >
-                        {gap.status}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${importanceStyles[gap.importance] ?? ''}`}
-                      >
-                        {gap.importance}
-                      </span>
-                      <span className="text-xs text-zinc-400">
-                        {gap.category}
-                      </span>
-                    </div>
-                    {gap.suggestion && (
-                      <p className="text-xs text-zinc-500">{gap.suggestion}</p>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Strengths */}
-          {analysis.strengths.length > 0 && (
-            <div className="mb-5">
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                Strengths
-              </h4>
-              <ul className="flex flex-col gap-1 pl-4">
-                {analysis.strengths.map((s, i) => (
-                  <li key={i} className="list-disc text-sm text-zinc-700">
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {/* Improvements */}
-          {analysis.improvements.length > 0 && (
-            <div>
-              <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
-                Improvements
-              </h4>
-              <ul className="flex flex-col gap-1 pl-4">
-                {analysis.improvements.map((s, i) => (
-                  <li key={i} className="list-disc text-sm text-zinc-700">
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Resume Output panel */}
-      {outputMarkdown && (
-        <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
-          <div className="mb-4 flex items-center justify-between">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
-              Resume Output
+      {/* Two-column: Gap Analysis + Resume Output */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+        {/* Gap Analysis panel */}
+        {analysis && (
+          <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-500">
+              Gap Analysis
             </h3>
-            <DownloadButton
+
+            {/* Score breakdown */}
+            <div className="mb-5 flex flex-col gap-2">
+              {(
+                ['skills', 'experience', 'keywords', 'education'] as const
+              ).map((key) => (
+                <ProgressBar
+                  key={key}
+                  label={key}
+                  value={analysis.scoreBreakdown[key]}
+                />
+              ))}
+            </div>
+
+            {/* Summary */}
+            <p className="mb-5 text-sm text-zinc-700">{analysis.summary}</p>
+
+            {/* Gaps list */}
+            {analysis.gaps.length > 0 && (
+              <div className="mb-5">
+                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                  Gaps
+                </h4>
+                <ul className="flex flex-col gap-2">
+                  {analysis.gaps.map((gap, i) => (
+                    <li
+                      key={i}
+                      className="rounded-lg border border-zinc-100 bg-zinc-50 p-3"
+                    >
+                      <div className="mb-1 flex flex-wrap items-center gap-2">
+                        <span className="font-medium text-zinc-800 text-sm">
+                          {gap.item}
+                        </span>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusStyles[gap.status] ?? ''}`}
+                        >
+                          {gap.status}
+                        </span>
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-medium ${importanceStyles[gap.importance] ?? ''}`}
+                        >
+                          {gap.importance}
+                        </span>
+                        <span className="text-xs text-zinc-400">
+                          {gap.category}
+                        </span>
+                      </div>
+                      {gap.suggestion && (
+                        <p className="text-xs text-zinc-500">{gap.suggestion}</p>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Strengths */}
+            {analysis.strengths.length > 0 && (
+              <div className="mb-5">
+                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                  Strengths
+                </h4>
+                <ul className="flex flex-col gap-1 pl-4">
+                  {analysis.strengths.map((s, i) => (
+                    <li key={i} className="list-disc text-sm text-zinc-700">
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Improvements */}
+            {analysis.improvements.length > 0 && (
+              <div>
+                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                  Improvements
+                </h4>
+                <ul className="flex flex-col gap-1 pl-4">
+                  {analysis.improvements.map((s, i) => (
+                    <li key={i} className="list-disc text-sm text-zinc-700">
+                      {s}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </section>
+        )}
+
+        {/* Resume Output panel */}
+        {outputMarkdown && (
+          <section className="rounded-xl border border-zinc-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-sm font-semibold uppercase tracking-wide text-zinc-500">
+                Resume Output
+              </h3>
+              <DownloadButton
+                markdown={outputMarkdown}
+                filename={downloadFilename}
+                lang={application.outputLang as 'en' | 'zh'}
+              />
+            </div>
+            <PdfPreview
               markdown={outputMarkdown}
-              filename={`${downloadFilename}.md`}
+              lang={application.outputLang as 'en' | 'zh'}
             />
-          </div>
-          <div className="max-h-[600px] overflow-y-auto rounded-lg border border-zinc-100 bg-zinc-50 p-4">
-            <pre className="font-mono text-xs leading-relaxed text-zinc-700 whitespace-pre-wrap break-words">
-              {outputMarkdown}
-            </pre>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
+      </div>
     </main>
   );
 }

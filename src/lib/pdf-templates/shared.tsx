@@ -360,6 +360,14 @@ interface ProjectDraft extends ResumeProject {
 // Internal type for skill categories during parsing.
 type SkillCategoryDraft = SkillCategory;
 
+// Labels that designate the skills subsection rather than a named category.
+const SECTION_DESIGNATOR_RE =
+  /^(technical\s*skills?|soft\s*skills?|hard\s*skills?|core\s*skills?|skills?|专业技能|软技能|技术技能|其他技能|技术)$/i;
+
+function isSectionDesignator(label: string): boolean {
+  return SECTION_DESIGNATOR_RE.test(label.trim());
+}
+
 /**
  * Parse a Markdown resume into the structured shape. Returns `null` if the
  * result is unusable (no name AND no sections), signaling the caller to fall
@@ -436,6 +444,7 @@ export function parseResumeMarkdown(md: string): StructuredResume | null {
         line.match(/^\*\*([^*]+)\*\*\s*[:：]?\s*(.*)$/);
       if (subMatch) {
         const label = subMatch[1].toLowerCase();
+        const displayLabel = stripMarkdownInline(subMatch[1]).trim();
         if (/soft|软/.test(label)) {
           skillsSub = 'soft';
         } else if (/technical|tech|hard|tools|languages|技术|硬技能/.test(label)) {
@@ -443,7 +452,11 @@ export function parseResumeMarkdown(md: string): StructuredResume | null {
         }
         const inlineRest = (subMatch[2] || '').trim();
         if (inlineRest) {
-          resume.skills[skillsSub].push(...tokenizeSkills(inlineRest));
+          const catItems = tokenizeSkills(inlineRest);
+          resume.skills[skillsSub].push(...catItems);
+          if (catItems.length && !isSectionDesignator(displayLabel)) {
+            skillCats.push({ label: displayLabel, items: catItems });
+          }
         }
         continue;
       }
@@ -510,7 +523,9 @@ export function parseResumeMarkdown(md: string): StructuredResume | null {
           const catMatch = text.match(/^([A-Za-z一-鿿][^:]{1,40}):\s*(.+)$/);
           if (catMatch) {
             const catItems = tokenizeSkills(catMatch[2]);
-            skillCats.push({ label: catMatch[1].trim(), items: catItems });
+            if (!isSectionDesignator(catMatch[1].trim())) {
+              skillCats.push({ label: catMatch[1].trim(), items: catItems });
+            }
             resume.skills[skillsSub].push(...catItems);
           } else {
             resume.skills[skillsSub].push(...tokenizeSkills(text));
@@ -519,10 +534,17 @@ export function parseResumeMarkdown(md: string): StructuredResume | null {
           const labelled = line.match(/^([A-Za-z一-鿿][\w\s一-鿿]+?)\s*[:：]\s*(.*)$/);
           if (labelled) {
             const label = labelled[1].toLowerCase();
+            const displayLabel = labelled[1].trim();
             if (/soft|软/.test(label)) skillsSub = 'soft';
             else if (/technical|tech|hard|tools|languages|技术|硬技能/.test(label))
               skillsSub = 'technical';
-            resume.skills[skillsSub].push(...tokenizeSkills(labelled[2]));
+            const catItems = tokenizeSkills(labelled[2]);
+            if (catItems.length) {
+              resume.skills[skillsSub].push(...catItems);
+              if (!isSectionDesignator(displayLabel)) {
+                skillCats.push({ label: displayLabel, items: catItems });
+              }
+            }
           } else {
             resume.skills[skillsSub].push(...tokenizeSkills(line));
           }
